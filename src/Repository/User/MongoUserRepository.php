@@ -4,6 +4,7 @@
 namespace App\Repository\User;
 
 
+use MongoDB\BSON\ObjectId;
 use App\Model\User\{User, UserInterface};
 use MongoDB\Client;
 
@@ -20,10 +21,29 @@ final class MongoUserRepository implements UserRepositoryInterface
         $this->client = $client;
     }
 
-    public function find(int $id): UserInterface
+    public function find($id): UserInterface
     {
         $collection = $this->client->blog->users;
-        $data = $collection->findOne(['id' => $id]);
-        return new User($data->id, $data->email);
+        $data = $collection->findOne(['_id' => new ObjectId($id)]);
+        return new User($data->_id, $data->email);
     }
+
+    public function delete(UserInterface $user): void
+    {
+        $collection = $this->client->blog->users;
+        $collection->deleteOne(['_id' => $user->getId()]);
+    }
+
+    public function save(UserInterface $user): void
+    {
+        $collection = $this->client->blog->users;
+        if($user->getId()){
+            $collection->updateOne(['_id' => $user->getId()], [ '$set' =>['email' => $user->getEmail()]]);
+        }else {
+            $result=$collection->insertOne(['email' => $user->getEmail()]);
+            $user->setId($result->getInsertedId());
+        }
+    }
+
+
 }

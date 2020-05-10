@@ -6,32 +6,36 @@ namespace App\Model\User;
 
 final class User implements UserInterface
 {
-    private ?int $id;
+    /**
+    * @param int|null|object
+    */
+    private $id;
+
     private ?string $email;
 
     /**
      * User constructor.
-     * @param int|null $id
+     * @param int|null|object $id
      * @param string|null $email
      */
-    public function __construct(?int $id, ?string $email)
+    public function __construct($id, ?string $email)
     {
         $this->setId($id);
         $this->setEmail($email);
     }
 
     /**
-     * @return int|null
+     * @return int|null|object
      */
-    public function getId(): ?int
+    public function getId()
     {
         return $this->id;
     }
 
     /**
-     * @param int|null $id
+     * @param int|null|object $id
      */
-    public function setId(?int $id): void
+    public function setId($id): void
     {
         $this->id = $id;
     }
